@@ -8,5 +8,4 @@ class SceneEnum(Enum):
     """
 
     MainMenu = auto()
-    Game = auto()
-    GameOver = auto()
+    Generator = auto()
