@@ -1,4 +1,4 @@
-from typing import Optional
+from typing import Optional, Union
 
 UNARY_OPERATORS = frozenset(["sin", "cos", "abs"])
 BINARY_OPERATORS = frozenset(["+", "-", "*", "/"])
@@ -8,16 +8,24 @@ VALID_NODE_VALUES = frozenset.union(UNARY_OPERATORS, BINARY_OPERATORS, VARIABLES
 
 
 class ExpressionNode:
-    def __init__(self, value: str):
+    def __init__(self, value: Union[str, float], left: Optional['ExpressionNode'] = None,
+                 right: Optional['ExpressionNode'] = None):
+        # Simplify by always using lower-case
         value = value.lower()
+
+        # Make sure the value is valid
         if value not in VALID_NODE_VALUES:
-            raise ValueError(f"Value {value} is not allowed. Allowed values are: {VALID_NODE_VALUES}")
+            # Constant values are also acceptable
+            try:
+                float(value)
+            except ValueError:
+                raise ValueError(f"Value {value} is not allowed. Allowed values are: {VALID_NODE_VALUES} or a number")
 
         self.value = value
 
         self.parent: Optional[ExpressionNode] = None
-        self.left: Optional[ExpressionNode] = None
-        self.right: Optional[ExpressionNode] = None
+        self.left = left
+        self.right = right
 
     def is_operator(self):
         return (self.value in BINARY_OPERATORS) or (self.value in UNARY_OPERATORS)
