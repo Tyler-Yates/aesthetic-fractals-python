@@ -57,3 +57,6 @@ class ExpressionNode:
 
     def is_leaf(self):
         return (self.left is None) and (self.right is None)
+
+    def is_variable(self):
+        return self.value in VARIABLES
