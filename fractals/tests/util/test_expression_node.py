@@ -24,4 +24,19 @@ class TestExpressionNode:
             ExpressionNode("asgasga")
 
     def test_expression_unary(self):
-        ExpressionNode(9)
+        ExpressionNode("sin", left=ExpressionNode(9))
+
+    def test_expression_unary_invalid(self):
+        # Unary operator nodes need to pass in the left node
+        with pytest.raises(ValueError):
+            ExpressionNode("sin")
+
+    def test_expression_binary(self):
+        ExpressionNode("*", left=ExpressionNode(9), right=ExpressionNode("x"))
+
+    def test_expression_binary_invalid(self):
+        # Unary operator nodes need to pass in both the left and right nodes
+        with pytest.raises(ValueError):
+            ExpressionNode("*")
+        with pytest.raises(ValueError):
+            ExpressionNode("*", left=ExpressionNode(9))
