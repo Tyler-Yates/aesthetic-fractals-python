@@ -40,3 +40,13 @@ class TestExpressionNode:
             ExpressionNode("*")
         with pytest.raises(ValueError):
             ExpressionNode("*", left=ExpressionNode(9))
+
+    def test_node_relationships(self):
+        left_node = ExpressionNode(9)
+        right_node = ExpressionNode("x")
+        parent_node = ExpressionNode("*", left=left_node, right=right_node)
+
+        assert left_node.parent == parent_node
+        assert right_node.parent == parent_node
+        assert parent_node.left == left_node
+        assert parent_node.right == right_node
