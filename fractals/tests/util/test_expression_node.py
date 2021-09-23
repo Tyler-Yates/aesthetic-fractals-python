@@ -5,8 +5,13 @@ from fractals.src.util.expression_node import ExpressionNode
 
 class TestExpressionNode:
     def test_expression_value(self):
-        expression_node = ExpressionNode("x")
-        assert "x" == expression_node.value
+        value = "x"
+        expression_node = ExpressionNode(value)
+        assert value == expression_node.value
+
+        # Expected to convert to lower-case
+        expression_node = ExpressionNode(value.upper())
+        assert value.lower() == expression_node.value
 
     def test_expression_valid_leaf_values(self):
         ExpressionNode("x")
