@@ -8,7 +8,15 @@ class Expression:
         self.root = root_node
 
     @staticmethod
-    def _generate_random_x_equation() -> 'Expression':
+    def _evaluate(current_node: ExpressionNode, x: float, y: float) -> float:
+        if current_node is None:
+            return -1.0
+
+    def evaluate(self, x: float, y: float) -> float:
+        return self._evaluate(self.root, x, y)
+
+    @staticmethod
+    def _generate_random_x_equation() -> "Expression":
         # Random constants
         a = random.uniform(-3.0, 3.0)
         b = random.uniform(-3.0, 3.0)

@@ -8,24 +8,43 @@ VALID_NODE_VALUES = frozenset.union(UNARY_OPERATORS, BINARY_OPERATORS, VARIABLES
 
 
 class ExpressionNode:
-    def __init__(self, value: Union[str, float], left: Optional['ExpressionNode'] = None,
-                 right: Optional['ExpressionNode'] = None):
+    def __init__(
+        self,
+        value: Union[str, float],
+        left: Optional["ExpressionNode"] = None,
+        right: Optional["ExpressionNode"] = None,
+    ):
         # Simplify by always using lower-case
-        value = value.lower()
+        if isinstance(value, str):
+            value = value.lower()
 
-        # Make sure the value is valid
-        if value not in VALID_NODE_VALUES:
-            # Constant values are also acceptable
+        if value in VALID_NODE_VALUES:
+            # String variable or operator
+            self.value = value
+        else:
+            # Constant float values are also acceptable
             try:
-                float(value)
+                self.value = float(value)
             except ValueError:
                 raise ValueError(f"Value {value} is not allowed. Allowed values are: {VALID_NODE_VALUES} or a number")
 
-        self.value = value
-
+        # Default to no parent node
         self.parent: Optional[ExpressionNode] = None
+
+        # Set left and right (if present) and also make this node the parent of the children
         self.left = left
+        if left is None:
+            if self.is_binary_operator() or self.is_unary_operator():
+                raise ValueError("Operator nodes must pass children in to constructor")
+        else:
+            left.parent = self
+
         self.right = right
+        if right is None:
+            if self.is_binary_operator():
+                raise ValueError("Operator nodes must pass children in to constructor")
+        else:
+            right.parent = self
 
     def is_operator(self):
         return (self.value in BINARY_OPERATORS) or (self.value in UNARY_OPERATORS)
