@@ -1,5 +1,7 @@
 import math
 
+from numba import jit
+
 from fractals.src.util.expression_node import ExpressionNode
 
 

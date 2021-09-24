@@ -1,4 +1,7 @@
+import logging
+
 import pygame
+from numba import jit
 from pygame import Surface
 
 from fractals.src.util.expressions import _generate_random_x_expression, _generate_random_y_expression
@@ -14,9 +17,18 @@ class Fractal:
         self.x_expression = _generate_random_x_expression()
         self.y_expression = _generate_random_y_expression()
 
-    def calculate_image(self, width: int, height: int) -> Surface:
-        image = Surface((width, height), pygame.SRCALPHA, 32)
+        self.log = logging.getLogger(self.__class__.__name__)
 
+    def calculate_image(self, surface: Surface):
+        self.log.info("Starting generation...")
+
+        point_to_alpha = self._calculate_points(surface.get_width(), surface.get_height())
+
+        for point, alpha in point_to_alpha.items():
+            pygame.draw.line(surface, [0, 0, 0, alpha], point, point)
+        self.log.info("Done!")
+
+    def _calculate_points(self, width: int, height: int) -> dict:
         point_to_alpha = dict()
 
         x = 0.0
@@ -36,7 +48,4 @@ class Fractal:
             new_point_alpha = min(MAX_ALPHA, point_alpha + ALPHA_STEP)
             point_to_alpha[point] = new_point_alpha
 
-        for point, alpha in point_to_alpha.items():
-            pygame.draw.line(image, [0, 0, 0, alpha], point, point)
-
-        return image
+        return point_to_alpha
