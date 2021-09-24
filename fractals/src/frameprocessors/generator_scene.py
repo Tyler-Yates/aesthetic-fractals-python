@@ -1,5 +1,5 @@
 import logging
-from concurrent.futures import ThreadPoolExecutor
+from concurrent.futures import Future, ThreadPoolExecutor
 from typing import List, TYPE_CHECKING
 
 import pygame.draw
@@ -47,7 +47,7 @@ class GameScene(Scene):
         self.executor_pool = ThreadPoolExecutor(9)
         self.fractals: List[Fractal] = []
         self.fractal_images = []
-        self.fractal_image_generation_futures = []
+        self.fractal_image_generation_futures: List[Future] = []
 
         self.log = logging.getLogger(self.__class__.__name__)
 
@@ -111,9 +111,8 @@ class GameScene(Scene):
         pygame.draw.line(screen, BOX_OUTLINE_COLOR, [0, self.box_height * 2], [screen.get_width(), self.box_height * 2])
 
         for i in range(len(self.fractal_image_generation_futures)):
-            if self.fractal_image_generation_futures[i].done():
-                fractal_image = self.fractal_images[i]
-                screen.blit(fractal_image, (self.box_rectangles[i].x, self.box_rectangles[i].y))
+            fractal_image = self.fractal_images[i]
+            screen.blit(fractal_image, (self.box_rectangles[i].x, self.box_rectangles[i].y))
 
             if (self.hover_box_index is not None) and (self.hover_box_index == i):
                 pygame.draw.rect(screen, "yellow", self.box_rectangles[i], width=1)

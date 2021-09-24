@@ -27,10 +27,10 @@ class CliffordFractal(Fractal):
 
         self.log = logging.getLogger(self.__class__.__name__)
 
-    def _calculate_points(self):
-        point_to_alpha = dict()
-
+    def calculate_image(self, surface: Surface):
         self.log.info("Starting generation...")
+
+        point_to_alpha = dict()
 
         x = 0
         y = 0
@@ -44,16 +44,9 @@ class CliffordFractal(Fractal):
             point_alpha = point_to_alpha.get(point, 0)
             new_point_alpha = min(FRACTAL_MAX_ALPHA, point_alpha + FRACTAL_ALPHA_STEP)
             point_to_alpha[point] = new_point_alpha
+            pygame.draw.line(surface, [FRACTAL_COLOR_R, FRACTAL_COLOR_G, FRACTAL_COLOR_B, new_point_alpha], point, point)
 
         self.log.info("Finished generation")
-
-        return point_to_alpha
-
-    def calculate_image(self, surface: Surface):
-        point_to_alpha = self._calculate_points()
-
-        for point, alpha in point_to_alpha.items():
-            pygame.draw.line(surface, [FRACTAL_COLOR_R, FRACTAL_COLOR_G, FRACTAL_COLOR_B, alpha], point, point)
 
     def mutate(self) -> "CliffordFractal":
         new_a = self.a + numpy.random.normal(loc=0.0, scale=0.1)
