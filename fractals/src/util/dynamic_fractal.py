@@ -3,7 +3,8 @@ import logging
 import pygame
 from pygame import Surface
 
-from fractals.src.util.expressions import _generate_random_x_expression, _generate_random_y_expression
+from fractals.src.util.expressions import _generate_dynamic_x_expression, _generate_dynamic_y_expression
+from fractals.src.util.fractal import Fractal
 
 DRAW_ITERATIONS = 500000
 MAX_ALPHA = 255
@@ -11,10 +12,10 @@ ALPHA_STEP = 1
 SCALE = 100
 
 
-class DynamicFractal:
+class DynamicFractal(Fractal):
     def __init__(self):
-        self.x_expression = _generate_random_x_expression()
-        self.y_expression = _generate_random_y_expression()
+        self.x_expression = _generate_dynamic_x_expression()
+        self.y_expression = _generate_dynamic_y_expression()
 
         self.log = logging.getLogger(self.__class__.__name__)
 

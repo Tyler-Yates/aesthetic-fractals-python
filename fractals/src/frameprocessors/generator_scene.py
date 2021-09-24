@@ -9,7 +9,7 @@ from pygame.event import Event
 from fractals.src.constants.game_constants import GAME_WIDTH_PX, GAME_HEIGHT_PX
 from fractals.src.interfaces.scene import Scene
 from fractals.src.state.game_state import GameState
-from fractals.src.util.dynamic_fractal import DynamicFractal
+from fractals.src.util.clifford_fractal import CliffordFractal
 
 if TYPE_CHECKING:
     from fractals.src.controllers.scene_controller import SceneController
@@ -43,7 +43,7 @@ class GameScene(Scene):
     def update(self, time_delta: float):
         if len(self.fractals) == 0:
             for i in range(9):
-                fractal = DynamicFractal()
+                fractal = CliffordFractal()
                 fractal_image = Surface((self.box_width, self.box_height), pygame.SRCALPHA, 32)
                 self.fractals.append(fractal)
                 self.fractal_images.append(fractal_image)
@@ -62,12 +62,12 @@ class GameScene(Scene):
         pygame.draw.line(screen, BOX_COLOR, [0, self.box_height], [screen.get_width(), self.box_height])
         pygame.draw.line(screen, BOX_COLOR, [0, self.box_height * 2], [screen.get_width(), self.box_height * 2])
 
-        for i in range(9):
+        for i in range(len(self.fractal_image_generation_futures)):
             if not self.fractal_image_generation_futures[i].done():
                 continue
 
             fractal_image = self.fractal_images[i]
             x_pos = (i % 3) * self.box_width
-            y_pos = (i % 3) * self.box_height
+            y_pos = ((i // 3) % 3) * self.box_height
 
             screen.blit(fractal_image, (x_pos, y_pos))
