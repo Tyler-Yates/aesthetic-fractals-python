@@ -11,6 +11,7 @@ from fractals.src.constants.game_constants import GAME_WIDTH_PX, GAME_HEIGHT_PX
 from fractals.src.interfaces.scene import Scene
 from fractals.src.state.game_state import GameState
 from fractals.src.util.clifford_fractal import CliffordFractal
+from fractals.src.util.fractal import Fractal
 
 if TYPE_CHECKING:
     from fractals.src.controllers.scene_controller import SceneController
@@ -44,7 +45,7 @@ class GameScene(Scene):
             )
 
         self.executor_pool = ThreadPoolExecutor(9)
-        self.fractals = []
+        self.fractals: List[Fractal] = []
         self.fractal_images = []
         self.fractal_image_generation_futures = []
 
@@ -56,12 +57,36 @@ class GameScene(Scene):
         mouse_x_abs = mouse_pos[0] - 1
         mouse_y_abs = mouse_pos[1] - 1
 
+        # Hover
         self.hover_box_index = None
         for i in range(len(self.box_rectangles)):
             box_rectangle = self.box_rectangles[i]
             if box_rectangle.collidepoint(mouse_x_abs, mouse_y_abs):
                 self.hover_box_index = i
                 break
+
+        # Process the events
+        for event in events:
+            # Left mouse button released
+            if event.type == pygame.MOUSEBUTTONUP and event.button == pygame.BUTTON_LEFT:
+                if self.hover_box_index is not None:
+                    self._new_generation(self.hover_box_index)
+
+    def _new_generation(self, seed_index: int):
+        seed_fractal = self.fractals[seed_index]
+        self.fractals[4] = seed_fractal
+        self.fractal_images[4] = self.fractal_images[seed_index]
+        self.fractal_image_generation_futures[4] = self.fractal_image_generation_futures[seed_index]
+
+        for i in range(9):
+            if i == 4:
+                continue
+
+            fractal = seed_fractal.mutate()
+            fractal_image = Surface((self.box_width, self.box_height), pygame.SRCALPHA, 32)
+            self.fractals[i] = fractal
+            self.fractal_images[i] = fractal_image
+            self.fractal_image_generation_futures[i] = self.executor_pool.submit(fractal.calculate_image, fractal_image)
 
     def update(self, time_delta: float):
         if len(self.fractals) == 0:
