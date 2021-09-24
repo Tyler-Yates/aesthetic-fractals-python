@@ -6,6 +6,7 @@ import pygame.draw
 from pygame import Surface
 from pygame.event import Event
 
+from fractals.src.constants.fractal_constants import FRACTAL_BACKGROUND_COLOR
 from fractals.src.constants.game_constants import GAME_WIDTH_PX, GAME_HEIGHT_PX
 from fractals.src.interfaces.scene import Scene
 from fractals.src.state.game_state import GameState
@@ -14,8 +15,8 @@ from fractals.src.util.clifford_fractal import CliffordFractal
 if TYPE_CHECKING:
     from fractals.src.controllers.scene_controller import SceneController
 
-BACKGROUND_COLOR = (255, 255, 255)
-BOX_COLOR = "black"
+BACKGROUND_COLOR = FRACTAL_BACKGROUND_COLOR
+BOX_OUTLINE_COLOR = "white"
 
 
 class GameScene(Scene):
@@ -56,11 +57,11 @@ class GameScene(Scene):
         screen.fill(BACKGROUND_COLOR)
 
         # Vertical lines
-        pygame.draw.line(screen, BOX_COLOR, [self.box_width, 0], [self.box_width, screen.get_height()])
-        pygame.draw.line(screen, BOX_COLOR, [self.box_width * 2, 0], [self.box_width * 2, screen.get_height()])
+        pygame.draw.line(screen, BOX_OUTLINE_COLOR, [self.box_width, 0], [self.box_width, screen.get_height()])
+        pygame.draw.line(screen, BOX_OUTLINE_COLOR, [self.box_width * 2, 0], [self.box_width * 2, screen.get_height()])
         # Horizontal lines
-        pygame.draw.line(screen, BOX_COLOR, [0, self.box_height], [screen.get_width(), self.box_height])
-        pygame.draw.line(screen, BOX_COLOR, [0, self.box_height * 2], [screen.get_width(), self.box_height * 2])
+        pygame.draw.line(screen, BOX_OUTLINE_COLOR, [0, self.box_height], [screen.get_width(), self.box_height])
+        pygame.draw.line(screen, BOX_OUTLINE_COLOR, [0, self.box_height * 2], [screen.get_width(), self.box_height * 2])
 
         for i in range(len(self.fractal_image_generation_futures)):
             if not self.fractal_image_generation_futures[i].done():

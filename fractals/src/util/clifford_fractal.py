@@ -4,13 +4,17 @@ import random
 import pygame
 from pygame import Surface
 
+from fractals.src.constants.fractal_constants import (
+    FRACTAL_DRAW_ITERATIONS,
+    FRACTAL_SCALE,
+    FRACTAL_MAX_ALPHA,
+    FRACTAL_ALPHA_STEP,
+    FRACTAL_COLOR_R,
+    FRACTAL_COLOR_G,
+    FRACTAL_COLOR_B,
+)
 from fractals.src.util.clifford_expression import clifford_expression
 from fractals.src.util.fractal import Fractal
-
-DRAW_ITERATIONS = 500000
-MAX_ALPHA = 255
-ALPHA_STEP = 1
-SCALE = 100
 
 
 class CliffordFractal(Fractal):
@@ -29,15 +33,15 @@ class CliffordFractal(Fractal):
 
         x = 0
         y = 0
-        for i in range(DRAW_ITERATIONS):
+        for i in range(FRACTAL_DRAW_ITERATIONS):
             x, y = clifford_expression(x, y, self.a, self.b, self.c, self.d)
             # Scale the coordinates and adjust so that the center of the surface is coordinate (0,0)
-            draw_x = int(round(x * SCALE + 100))
-            draw_y = int(round(y * SCALE + 100))
+            draw_x = int(round(x * FRACTAL_SCALE + 100))
+            draw_y = int(round(y * FRACTAL_SCALE + 100))
 
             point = (draw_x, draw_y)
             point_alpha = point_to_alpha.get(point, 0)
-            new_point_alpha = min(MAX_ALPHA, point_alpha + ALPHA_STEP)
+            new_point_alpha = min(FRACTAL_MAX_ALPHA, point_alpha + FRACTAL_ALPHA_STEP)
             point_to_alpha[point] = new_point_alpha
 
         self.log.info("Finished generation")
@@ -48,4 +52,4 @@ class CliffordFractal(Fractal):
         point_to_alpha = self._calculate_points()
 
         for point, alpha in point_to_alpha.items():
-            pygame.draw.line(surface, [0, 0, 0, alpha], point, point)
+            pygame.draw.line(surface, [FRACTAL_COLOR_R, FRACTAL_COLOR_G, FRACTAL_COLOR_B, alpha], point, point)
