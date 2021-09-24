@@ -5,8 +5,10 @@ import pygame.draw
 from pygame import Surface
 from pygame.event import Event
 
+from fractals.src.constants.game_constants import GAME_WIDTH_PX, GAME_HEIGHT_PX
 from fractals.src.interfaces.scene import Scene
 from fractals.src.state.game_state import GameState
+from fractals.src.util.fractal import Fractal
 
 if TYPE_CHECKING:
     from fractals.src.controllers.scene_controller import SceneController
@@ -22,6 +24,9 @@ class GameScene(Scene):
 
     def __init__(self, game_state: GameState, scene_controller: "SceneController"):
         super().__init__(game_state, scene_controller)
+
+        self.fractal = Fractal()
+        self.fractal_image = self.fractal.calculate_image(GAME_WIDTH_PX, GAME_HEIGHT_PX)
 
         self.log = logging.getLogger(self.__class__.__name__)
 
@@ -44,3 +49,5 @@ class GameScene(Scene):
         # Horizontal lines
         pygame.draw.line(screen, BOX_COLOR, [0, box_height], [screen.get_width(), box_height])
         pygame.draw.line(screen, BOX_COLOR, [0, box_height * 2], [screen.get_width(), box_height * 2])
+
+        screen.blit(self.fractal_image, (0, 0))
