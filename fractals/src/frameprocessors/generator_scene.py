@@ -17,6 +17,7 @@ if TYPE_CHECKING:
 
 BACKGROUND_COLOR = FRACTAL_BACKGROUND_COLOR
 BOX_OUTLINE_COLOR = "white"
+BOX_BORDER = 2
 
 
 class GameScene(Scene):
@@ -30,6 +31,17 @@ class GameScene(Scene):
         # Boxes
         self.box_width = GAME_WIDTH_PX // 3
         self.box_height = GAME_HEIGHT_PX // 3
+        self.hover_box_index = None
+        self.box_rectangles = []
+        for i in range(9):
+            x_pos = (i % 3) * self.box_width
+            y_pos = ((i // 3) % 3) * self.box_height
+
+            self.box_rectangles.append(
+                pygame.Rect(
+                    x_pos + BOX_BORDER, y_pos + BOX_BORDER, self.box_width - BOX_BORDER, self.box_height - BOX_BORDER
+                )
+            )
 
         self.executor_pool = ThreadPoolExecutor(9)
         self.fractals = []
@@ -39,7 +51,17 @@ class GameScene(Scene):
         self.log = logging.getLogger(self.__class__.__name__)
 
     def process_input(self, events: List[Event]):
-        pass
+        mouse_pos = pygame.mouse.get_pos()
+        # Mouse seems to be off by a little bit so offset it
+        mouse_x_abs = mouse_pos[0] - 1
+        mouse_y_abs = mouse_pos[1] - 1
+
+        self.hover_box_index = None
+        for i in range(len(self.box_rectangles)):
+            box_rectangle = self.box_rectangles[i]
+            if box_rectangle.collidepoint(mouse_x_abs, mouse_y_abs):
+                self.hover_box_index = i
+                break
 
     def update(self, time_delta: float):
         if len(self.fractals) == 0:
@@ -64,11 +86,9 @@ class GameScene(Scene):
         pygame.draw.line(screen, BOX_OUTLINE_COLOR, [0, self.box_height * 2], [screen.get_width(), self.box_height * 2])
 
         for i in range(len(self.fractal_image_generation_futures)):
-            if not self.fractal_image_generation_futures[i].done():
-                continue
+            if self.fractal_image_generation_futures[i].done():
+                fractal_image = self.fractal_images[i]
+                screen.blit(fractal_image, (self.box_rectangles[i].x, self.box_rectangles[i].y))
 
-            fractal_image = self.fractal_images[i]
-            x_pos = (i % 3) * self.box_width
-            y_pos = ((i // 3) % 3) * self.box_height
-
-            screen.blit(fractal_image, (x_pos, y_pos))
+            if (self.hover_box_index is not None) and (self.hover_box_index == i):
+                pygame.draw.rect(screen, "yellow", self.box_rectangles[i], width=1)
