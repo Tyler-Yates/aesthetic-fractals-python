@@ -1,10 +1,10 @@
 import random
 
-from fractals.src.util.expression import Expression
+from fractals.src.util.dynamic_expression import DynamicExpression
 from fractals.src.util.expression_node import ExpressionNode
 
 
-def _generate_random_x_expression() -> "Expression":
+def _generate_random_x_expression() -> "DynamicExpression":
     # Random constants
     a = random.uniform(-2.0, 2.0)
     b = random.uniform(-2.0, 2.0)
@@ -25,10 +25,10 @@ def _generate_random_x_expression() -> "Expression":
 
     # Root
     root = ExpressionNode("+", sin_1, mul_3)
-    return Expression(root)
+    return DynamicExpression(root)
 
 
-def _generate_random_y_expression() -> "Expression":
+def _generate_random_y_expression() -> "DynamicExpression":
     # Random constants
     a = random.uniform(-3.0, 3.0)
     b = random.uniform(-3.0, 3.0)
@@ -49,4 +49,4 @@ def _generate_random_y_expression() -> "Expression":
 
     # Root
     root = ExpressionNode("+", sin_1, mul_3)
-    return Expression(root)
+    return DynamicExpression(root)

@@ -9,7 +9,7 @@ from pygame.event import Event
 from fractals.src.constants.game_constants import GAME_WIDTH_PX, GAME_HEIGHT_PX
 from fractals.src.interfaces.scene import Scene
 from fractals.src.state.game_state import GameState
-from fractals.src.util.fractal import Fractal
+from fractals.src.util.dynamic_fractal import DynamicFractal
 
 if TYPE_CHECKING:
     from fractals.src.controllers.scene_controller import SceneController
@@ -34,15 +34,6 @@ class GameScene(Scene):
         self.fractals = []
         self.fractal_images = []
         self.fractal_image_generation_futures = []
-        for i in range(9):
-            fractal = Fractal()
-            fractal_image = Surface((self.box_width, self.box_height), pygame.SRCALPHA, 32)
-            self.fractals.append(fractal)
-            self.fractal_images.append(fractal_image)
-
-            self.fractal_image_generation_futures.append(self.executor_pool.submit(
-                fractal.calculate_image, fractal_image
-            ))
 
         self.log = logging.getLogger(self.__class__.__name__)
 
@@ -50,7 +41,16 @@ class GameScene(Scene):
         pass
 
     def update(self, time_delta: float):
-        pass
+        if len(self.fractals) == 0:
+            for i in range(9):
+                fractal = DynamicFractal()
+                fractal_image = Surface((self.box_width, self.box_height), pygame.SRCALPHA, 32)
+                self.fractals.append(fractal)
+                self.fractal_images.append(fractal_image)
+
+                self.fractal_image_generation_futures.append(
+                    self.executor_pool.submit(fractal.calculate_image, fractal_image)
+                )
 
     def render(self, screen: Surface):
         screen.fill(BACKGROUND_COLOR)

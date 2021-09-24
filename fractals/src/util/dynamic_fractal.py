@@ -1,7 +1,6 @@
 import logging
 
 import pygame
-from numba import jit
 from pygame import Surface
 
 from fractals.src.util.expressions import _generate_random_x_expression, _generate_random_y_expression
@@ -12,7 +11,7 @@ ALPHA_STEP = 1
 SCALE = 100
 
 
-class Fractal:
+class DynamicFractal:
     def __init__(self):
         self.x_expression = _generate_random_x_expression()
         self.y_expression = _generate_random_y_expression()
